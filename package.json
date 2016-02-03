@@ -1,0 +1,16 @@
+{
+  "name": "twitter_streaming",
+  "version": "0.0.0",
+  "description": "Twitter Streaming built on Nodejs and Express",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Abdul Qadir Faridi",
+  "license": "ISC",
+  "dependencies": {
+    "ejs": "^2.4.1",
+    "express": "^4.13.4",
+    "mongodb": "^2.1.4"
+  }
+}
