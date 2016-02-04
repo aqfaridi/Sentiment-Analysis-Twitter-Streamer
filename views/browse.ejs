@@ -1,0 +1,38 @@
+
+<html>
+<head>
+<%include partials/head.ejs %>
+</head>
+<style>
+body{
+	background:url("img/back.jpg");
+	}
+legend.scheduler-border {
+    width:inherit; /* Or auto */
+    padding:0 10px; /* To give a bit of padding on the left and right */
+    border-bottom:none;
+}
+</style>
+<body >
+<%include partials/header.ejs %>
+
+<div class="container text-center">
+          
+	 <br><br>
+	 <h1 class="intro-title animated fadeInDown" style="color:white;font-size:35px;line-height:1.2;"> Fetch any Web Page http.request Nodejs. It's Free !!</h1>
+
+
+	 <form role="form" action="/fetch" method="POST">
+	 	<div class="row">
+	        <div class="col-sm-9"><input type="url" placeholder = "Url:" class="form-control" name="url" id="url"></div>
+	        <button type="submit" class="col-sm-2 btn btn-primary">Submit</button>
+	     </div>
+	 </form>
+	 
+</div>
+
+<%include partials/footer.ejs %>
+<%include partials/jsdefaults.ejs %>
+</body>
+
+</html>

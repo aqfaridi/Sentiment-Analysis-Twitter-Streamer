@@ -1,0 +1,49 @@
+
+<html ng-app="twitstr">
+<head>
+<%include partials/head.ejs %>
+<style>
+body{
+	background:url("img/back.jpg");
+	}
+</style>
+</head>
+<body >
+<%include partials/header.ejs %>
+
+<div style="padding-bottom: 150px;" class="container text-center" ng-controller="GitCtrl">
+         
+	 <br><br>
+	 <h1 class="intro-title animated fadeInDown" style="color:white;font-size:35px;line-height:1.2;"> Fetch Github Repositories of any user. It's Free !!</h1>
+
+	
+ 	<div class="row">
+        <div class="col-sm-9"><input type="text" placeholder = "Username" class="form-control" name="username" id="username" ng-model="username"></div>
+        {{git.username}}
+        <button type="submit" class="col-sm-2 btn btn-primary" ng-click="getrepo()">Submit</button>
+	</div>
+	<br><br>
+	 <table class="table">
+	 	<thead>
+	 		<tr class="danger">
+	 			<th>S.No.</th>
+	 			<th>Repository</th>
+	 			<th>Description</th>
+	 		</tr>
+	 	</thead>
+	 	<tbody>
+	 		<tr class="success" ng-repeat="repo in repos">
+	 			<td>{{$index+1}}</td>
+	 			<td><a href={{repo.html_url}}>{{repo.name}}</a></td>
+	 			<td>{{repo.description}}</td>	
+	 		</tr>
+	 	</tbody>
+	 </table>
+
+</div>
+
+<%include partials/footer.ejs %>
+<%include partials/jsdefaults.ejs %>
+</body>
+
+</html>
