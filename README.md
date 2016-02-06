@@ -25,21 +25,30 @@ Streaming Tweets using Nodejs,Express,socket.io in backend,MongoDb as Database,A
 - Make directories for Mongodb data C:\data\db 
 
 - Clone this repository using Git Bash: 
- 	> git clone https://github.com/aqfaridi/Twitter-Streamer.git
+
+```ruby
+	git clone https://github.com/aqfaridi/Twitter-Streamer.git
+```
 
 - Navigate to cloned directory & open cmd prompt: 
 
 - Install all dependencies :
 
-	> npm install express 
-	> npm install body-parser 
-	> npm install crypto
-	> npm install ejs
-	> npm install mongodb
-	> npm install socket.io  
+```ruby
+	npm install express 
+	npm install body-parser 
+	npm install crypto
+	npm install ejs
+	npm install mongodb
+	npm install socket.io  
+```
 
 - Run Node Server
-	> node app
+```ruby
+	node app
+```
+- Goto Browser : 
 
-- Goto Browser : http://localhost:8000
-
+```ruby
+	http://localhost:8000
+```
