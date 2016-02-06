@@ -24,7 +24,7 @@ var port = config.port;
 var MongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
 var ObjectId = require('mongodb').ObjectID;
-var url = 'mongodb://localhost:27017/twitter';
+var db_url = 'mongodb://localhost:27017/twitter';
 
 var insertDocument = function(db,entry,callback) {
    db.collection('tweet').insertOne(entry, function(err, result) {
@@ -157,7 +157,7 @@ server.listen(port, host,function(){
 
 
 function getTwitStr(word) {
-MongoClient.connect(url, function(err, db) {
+MongoClient.connect(db_url, function(err, db) {
   assert.equal(null, err);
   console.log("we are connected!" + url);
 
