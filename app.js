@@ -5,6 +5,7 @@ var http = require("http");
 var url = require("url");
 var bodyParser = require('body-parser');
 var routes = require('./routes'); // require routes folder to modularize routes  
+var auth = require('./auth');
 
 var app = express();
 
@@ -126,10 +127,6 @@ app.get("/github/:user", function(request, response){
 	});
 });
 
-
-	
-
-
 app.get("/hello", function(request, response){
 	response.send("Hello!");
 });
@@ -147,6 +144,121 @@ app.get("/", routes.index);
 app.get("/browser", routes.browse);
 app.get("/github", routes.git);
 
-app.listen(port, host,function(){
+var server = require('http').Server(app);
+var io = require('socket.io').listen(server);
+
+server.listen(port, host,function(){
 	console.log("Listening on "+host+":"+port);
+});
+
+
+function getTwitStr(word) {
+	
+	// OAuth1.0 - 3-legged server side flow (Twitter example) 
+	CONSUMER_KEY = 'xdVYtzjINoIB6x8y1ePuGrTVk';
+	CONSUMER_SECRET = 'yxPXV3TMSHPiVA0Q8EmLGdfTcYZWewqzo5Csmh9eCL3gnvqL5p';
+	TOKEN = '328140155-6lnDwykZDykTPY6hxZtTMswbYAQ35ywotYQ7kAZV';
+	TOKEN_SECRET = 'aQwPtQ4gIikHwDF1cinoYMOijAvvOHCAV5CyEKgMTqzRq';
+
+	method = "POST";
+	Url = 'https://stream.twitter.com/1.1/statuses/filter.json';
+	parameters = "track=twitter";
+
+	oauth_consumer_key = CONSUMER_KEY;
+	oauth_nonce = auth.getNonce(32);
+	oauth_signature_method = "HMAC-SHA1";
+	oauth_timestamp = auth.getTimestamp();
+	oauth_token = TOKEN;
+	oauth_version = "1.0";
+
+	var oauthParameters = {
+      "oauth_timestamp":        oauth_timestamp,
+      "oauth_nonce":            oauth_nonce,
+      "oauth_version":          oauth_version,
+      "oauth_signature_method": oauth_signature_method,
+      "oauth_consumer_key":     oauth_consumer_key,
+      "oauth_token":            oauth_token,
+      "track":                  word
+	};
+
+
+
+	oauth_signature = auth.getSignature(method, Url, auth.normaliseRequestParams(oauthParameters), CONSUMER_SECRET,TOKEN_SECRET,oauth_signature_method);
+
+	authparams = 'OAuth '+auth.encodeData("oauth_consumer_key")+'=\"'+auth.encodeData(oauth_consumer_key)+'\", '
+	                     +auth.encodeData("oauth_nonce")+'=\"'+auth.encodeData(oauth_nonce)+'\", '
+	                     +auth.encodeData("oauth_signature")+'=\"'+auth.encodeData(oauth_signature)+'\", '
+	                     +auth.encodeData("oauth_signature_method")+'=\"'+auth.encodeData(oauth_signature_method)+'\", '
+	                     +auth.encodeData("oauth_timestamp")+'=\"'+auth.encodeData(oauth_timestamp)+'\", '
+	                     +auth.encodeData("oauth_token")+'=\"'+auth.encodeData(oauth_token)+'\", '
+	                     +auth.encodeData("oauth_version")+'=\"'+auth.encodeData(oauth_version)+'\"';
+	
+	var options = {
+		host: 'stream.twitter.com',
+		path: '/1.1/statuses/filter.json?track='+word,
+		method: 'POST',
+		headers: {
+			"User-Agent" : "Mozilla/5.0 (Windows NT 6.3; WOW64; rv:37.0) Gecko/20100101 Firefox/37.0",
+			"Authorization" : authparams
+		}
+	};
+
+	var request = https.request(options, function(response) {
+		body = "";
+		response.on("data", function(chunk){
+            body += chunk.toString('utf8');
+
+            var index, json;
+
+    		while((index = body.indexOf('\r\n')) > -1) {
+                json = body.slice(0, index);
+                console.log(json);
+                body = body.slice(index + 2);
+                if(json.length > 0) {
+                    try {
+                    	var twt = JSON.parse(json);
+                    	/*
+						var tweet = {
+							"user" : {"screen_name": twt.user.screen_name},
+							"text": txt.text
+						};
+						*/
+						console.log(twt);
+                        io.sockets.emit('tweet', twt);
+                       
+                    } catch(e) {
+                        io.sockets.emit('error', e);
+                    }
+                }
+            }
+
+
+            /*
+			var str = chunk.toString('utf8');
+			console.log(str);
+			//var twt = JSON.parse(chunk);
+			var tweet = {
+				"user" : {screen_name: "twt.user.screen_name"},
+				text: "txt.text"
+			};
+			
+		
+			io.sockets.emit("tweet", tweet);
+			console.log(tweet);
+			*/
+		});
+
+
+
+		response.on("end", function(){
+			console.log("Disconnected");
+		});
+	});
+	request.end();
+}
+
+
+app.get("/:key", function(request, response){
+	keyword = request.params.key;
+	getTwitStr(keyword);
 });

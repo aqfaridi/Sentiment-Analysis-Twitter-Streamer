@@ -1,14 +1,50 @@
-
-<html>
+<html ng-app="twitstr">
 <head>
 <%include partials/head.ejs %>
+<style>
+body{
+	background:url("img/back.jpg");
+	}
+</style>
 </head>
-
-<body>
+<body >
 <%include partials/header.ejs %>
 
-<div class="container">
- 
+<script src="/socket.io/socket.io.js"></script>
+
+<div style="padding-bottom: 150px;" class="container text-center" ng-controller="TwtCtrl">
+         
+	 <br><br>
+	 <h1 class="intro-title animated fadeInDown" style="color:white;font-size:35px;line-height:1.2;"> Streaming Tweets based on Keyword . It's Free !!</h1>
+
+	
+ 	<div class="row">
+        <div class="col-sm-9"><input type="text" placeholder = "Keyword" class="form-control" name="keyword" id="keyword" ng-model="keyword"></div>
+        <button type="submit" class="col-sm-2 btn btn-primary" ng-click="getTwit()">Submit</button>
+
+	</div>
+
+	<br><br>
+
+	<h1>Real-time Tweets</h1>
+
+	 <table id="tweets" class="table table-bordered" style="background-color:white;padding:20px;">
+	 	{{INITIAL_TWEETS}}
+	 </table>
+
+	<script type="text/javascript">
+		var socket = io.connect('http://127.0.0.1:8000');	
+		var tbl = document.getElementById("tweets");
+		socket.on('tweet', function (tweet) {
+			var tr = document.createElement("tr");
+			tr.className = "info";
+			tr.innerHTML = "<td><strong>" + tweet.user.screen_name + ": </strong></td> " + "<td>" + tweet.text + ": </td> ";
+			tbl.insertBefore(tr, tbl.getElementsByTagName("tr")[0]);
+			var elem = tbl.getElementsByTagName("tr")[10];
+			elem.parentNode.removeChild(elem);
+		});
+	</script>
+
 </div>
 
 <%include partials/footer.ejs %>

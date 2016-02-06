@@ -1,5 +1,5 @@
 exports.index = function(request, response){
-	response.render("index",{title:"Home"}); // rendering index.ejs template
+	response.render("index",{title:"Twitter Streamer"}); // rendering index.ejs template
 }
 
 exports.browse = function(request, response){
