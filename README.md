@@ -30,9 +30,15 @@ Streaming Tweets using Nodejs,Express,socket.io in backend,MongoDb as Database,A
 	git clone https://github.com/aqfaridi/Twitter-Streamer.git
 ```
 
-- Navigate to cloned directory & open cmd prompt: 
+- Navigate to cloned directory, Update config.json with your developers twitter tokens.
 
-- Install all dependencies :
+	+ Go to http://dev.twitter.com 
+	+ navigate to manage your app in footer http://apps.twitter.com
+	+ Create new app, Fill up information asked
+	+ Go to keys & access tokens tab, generate access token
+	+ Twitter application key:consumer key & secret are application specific to make api calls
+
+- open cmd prompt: Install all dependencies :
 
 ```ruby
 	npm install express 
@@ -41,6 +47,11 @@ Streaming Tweets using Nodejs,Express,socket.io in backend,MongoDb as Database,A
 	npm install ejs
 	npm install mongodb
 	npm install socket.io  
+```
+
+- Run Mongo Server
+```ruby
+	mongod
 ```
 
 - Run Node Server

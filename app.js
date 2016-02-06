@@ -163,10 +163,10 @@ MongoClient.connect(db_url, function(err, db) {
 
 	
 	// OAuth1.0 - 3-legged server side flow (Twitter example) 
-	CONSUMER_KEY = 'xdVYtzjINoIB6x8y1ePuGrTVk';
-	CONSUMER_SECRET = 'yxPXV3TMSHPiVA0Q8EmLGdfTcYZWewqzo5Csmh9eCL3gnvqL5p';
-	TOKEN = '328140155-6lnDwykZDykTPY6hxZtTMswbYAQ35ywotYQ7kAZV';
-	TOKEN_SECRET = 'aQwPtQ4gIikHwDF1cinoYMOijAvvOHCAV5CyEKgMTqzRq';
+	CONSUMER_KEY = config.CONSUMER_KEY;
+	CONSUMER_SECRET = config.CONSUMER_SECRET;
+	TOKEN = config.TOKEN;
+	TOKEN_SECRET = config.TOKEN_SECRET;
 
 	method = "POST";
 	Url = 'https://stream.twitter.com/1.1/statuses/filter.json';
