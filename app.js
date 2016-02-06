@@ -21,14 +21,18 @@ var host = config.host;
 var port = config.port;
 
 
-var mongo = require("mongodb");
-var dbHost = "127.0.0.1"
-var dbPort = "27017"
-var db = new mongo.Db("db_name",new mongo.Server(dbHost,dbPort,{}));
-db.open(function(error){
-	console.log("we are connected!" + dbHost + ":" + dbPort);
-	
-}); // open connection to mongo server 
+var MongoClient = require('mongodb').MongoClient;
+var assert = require('assert');
+var ObjectId = require('mongodb').ObjectID;
+var url = 'mongodb://localhost:27017/twitter';
+
+var insertDocument = function(db,entry,callback) {
+   db.collection('tweet').insertOne(entry, function(err, result) {
+    assert.equal(err, null);
+    console.log("Inserted a document into the tweet collection.");
+    callback(result);
+  });
+};
 
 function getRepos(username, callback) {
 
@@ -153,6 +157,10 @@ server.listen(port, host,function(){
 
 
 function getTwitStr(word) {
+MongoClient.connect(url, function(err, db) {
+  assert.equal(null, err);
+  console.log("we are connected!" + url);
+
 	
 	// OAuth1.0 - 3-legged server side flow (Twitter example) 
 	CONSUMER_KEY = 'xdVYtzjINoIB6x8y1ePuGrTVk';
@@ -225,6 +233,9 @@ function getTwitStr(word) {
 						*/
 						console.log(twt);
                         io.sockets.emit('tweet', twt);
+                        insertDocument(db,twt,function() {
+						    //db.close();
+						});
                        
                     } catch(e) {
                         io.sockets.emit('error', e);
@@ -233,19 +244,7 @@ function getTwitStr(word) {
             }
 
 
-            /*
-			var str = chunk.toString('utf8');
-			console.log(str);
-			//var twt = JSON.parse(chunk);
-			var tweet = {
-				"user" : {screen_name: "twt.user.screen_name"},
-				text: "txt.text"
-			};
-			
-		
-			io.sockets.emit("tweet", tweet);
-			console.log(tweet);
-			*/
+
 		});
 
 
@@ -255,6 +254,8 @@ function getTwitStr(word) {
 		});
 	});
 	request.end();
+}); //MongoClient Connect
+
 }
 
 
