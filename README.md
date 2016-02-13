@@ -1,10 +1,14 @@
-#Twitter Streamer 
+# Sentiment Analysis with Twitter Streamer 
 
-Streaming Tweets using Nodejs,Express,socket.io in backend,MongoDb as Database,AngularJs in frontend without using third-party module for authorization.
+Sentiment Anaylysis of Movie Reviews using Naive Bayesian & AFINN Classifier and streaming Tweets using Nodejs,Express,socket.io in backend,MongoDb as Database,AngularJs in frontend without using third-party module for authorization.
 
 
 ##Features 
 
+ - Sentiment Anaylysis of Movie Reviews using Naive Bayesian & AFINN Classifier
+ 	+ Dataset : http://www.cs.cornell.edu/people/pabo/movie-review-data
+ 	+ 5331 positive snippets & 5331 negative snippets with 80% Accuracy
+ 
  - Browser : Fetch Any Url Content 
  - Github : Fetch Github Repositories of any User
  - Twitter : Get Streaming Tweets on Searched Keyword
@@ -17,6 +21,8 @@ Streaming Tweets using Nodejs,Express,socket.io in backend,MongoDb as Database,A
  		* get signature base string using url,method & parameter string
  		*  get signature HMAC-SHA1 encoded using signature base string.
 
+ - Implemented Naive Bayesian Classifier in JS : NB.js and stopwords.js
+ - Implemented AFINN Classifier in JS : afinnClassifier.js	
 
 ##Configuration 
 

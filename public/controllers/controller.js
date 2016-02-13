@@ -56,3 +56,40 @@ app.controller('TwtCtrl',function($scope,$http){ // every controller has its ass
 			});
 		};
 	});
+
+app.controller('SentimentCtrl',function($scope,$http){ // every controller has its associated scope
+		//coding for browser
+		console.log("Hello from sentiment controller");
+		sent1 = {
+			"description":"some text",		
+			"class":'positive'
+		};
+
+		$scope.keyword = "";
+		$scope.texts = [];
+
+
+		ref = function(){
+			$http.get('/').success(function(response){
+				$scope.keyword = "";
+			});
+		};
+
+		$scope.getsentNB = function(){
+			$http.get('/sentiment/NB').success(function(response){
+				console.log("I got the data"+response);
+				$scope.texts = response;
+				ref(); //refresh
+			});
+		};
+
+
+		$scope.getsentAFINN = function(){
+			$http.get('/sentiment/AFINN').success(function(response){
+				console.log("I got the data"+response);
+				$scope.texts = response;
+				ref(); //refresh
+			});
+		};
+
+	});

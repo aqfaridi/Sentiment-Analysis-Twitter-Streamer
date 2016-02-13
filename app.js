@@ -1,12 +1,15 @@
 var express = require("express");
 var fs = require("fs");
+var readline = require('readline');
 var https = require("https");
 var http = require("http");
 var url = require("url");
 var bodyParser = require('body-parser');
 var routes = require('./routes'); // require routes folder to modularize routes  
 var auth = require('./auth');
-
+var NB = require('./NB');
+var stopwords = require('./stopwords');
+var AFC = require('./afinnClassifier');
 var app = express();
 
 app.set('view engine','ejs'); // use embeddedjs
@@ -121,6 +124,177 @@ function getWeb(Host,Path, callback) {
 	request.end();
 }
 
+function NB_Classify(callback) {
+	//read pos.txt & neg.txt use 80% data for training and 20% data testing
+	var pos = fs.readFileSync("public/data/pos.txt").toString().split("\n");;
+	var neg = fs.readFileSync("public/data/neg.txt").toString().split("\n");;
+	texts = [];
+	test_pos = [];
+	test_neg = [];
+	
+	var c = 1;	
+	for(i in pos) {
+	    //console.log(pos[i]);
+	    if(c < 5000)
+	    	NB.train(stopwords.removeStopWords(pos[i]),"positive"); // Training Classifier
+	    else
+	    	test_pos.push(pos[i]);
+	    c++;
+	}
+
+    c = 1;
+	for(i in neg) {
+	    //console.log(neg[i]);
+	    if(c < 5000)
+	    	NB.train(stopwords.removeStopWords(neg[i]),"negative"); // Training Classifier
+	    else
+	    	test_neg.push(neg[i]);
+	    c++;
+	}
+
+	console.log("Training Done !!");
+
+	var pos = 0,neg = 0,TPos = 0,TNeg = 0,FPos = 0,FNeg = 0;
+	for	(index = 0; index < test_pos.length; index++) {
+    	text = test_pos[index];
+		var res = NB.test(stopwords.removeStopWords(text));  // Testing Classifier
+		console.log(test_pos.length +  " "+index + " "+ text + " "+res.category);
+		if(res.category == "positive") TPos++;
+		else FNeg++;
+		pos++;
+		var prob = res.probability;
+		texts.push({"text":test_pos[index],		
+					"category":res.category,
+					"probability":prob.toFixed(2)
+		});
+
+	}
+
+	for	(index = 0; index < test_neg.length; index++) {
+    	text = test_neg[index];
+
+		var res = NB.test(stopwords.removeStopWords(text)); // Testing Classifier
+		console.log(test_neg.length +  " "+ index + " "+  text + " "+res.category);
+		if(res.category == "negative") TNeg++;
+		else FPos++;
+
+		neg++;
+		var prob = res.probability;
+		texts.push({"text":test_neg[index],		
+					"category":res.category,
+					"probability":prob.toFixed(2)
+		});
+	}
+
+	console.log("Testing Done !!");
+
+	var Accuracy = ((TPos + TNeg)/(pos+neg)) * 100;
+	var Recall = (TPos / (FNeg + TPos)) * 100;
+	var Precision = (TPos / (FPos + TPos)) * 100; 
+	var recall = "Recall : "+Recall.toFixed(2);
+	var precision = "Precision : "+Precision.toFixed(2);
+	var accuracy = "Accuracy : "+ Accuracy.toFixed(2);
+	var  out = "Naive Bayes Classifier Performance : " + accuracy + " | " + recall + " | " + precision;  
+	//console.log("Accuracy %d",Accuracy);
+	texts.unshift({"text":out,		
+				"category":"",
+				"probability":""
+	})
+	callback(texts);
+}
+
+
+function AFINN_Classify(callback) {
+	//read pos.txt & neg.txt use 80% data for training and 20% data testing
+	var pos = fs.readFileSync("public/data/pos.txt").toString().split("\n");;
+	var neg = fs.readFileSync("public/data/neg.txt").toString().split("\n");;
+	texts = [];
+	test_pos = pos;
+	test_neg = neg;
+	
+
+	console.log("No Training Done !! Since using AFINN wordlist");
+
+	var pos = 0,neg = 0,TPos = 0,TNeg = 0,FPos = 0,FNeg = 0;
+	for	(index = 0; index < test_pos.length; index++) {
+    	text = test_pos[index];
+		var res = AFC.analyze(text);  // Analyzing Classifier
+		var category = "";
+		if(res.score < 0) category = "negative";
+		if(res.score > 0) category = "positive";
+		if(res.score == 0) category = "neutral"; //ignore it
+		console.log(text + " "+category);
+
+		if(category == "positive"){
+			TPos++;
+			pos++;
+			var prob = res.score;
+			texts.push({"text":text,		
+						"category":category,
+						"probability":prob
+			});
+		}
+		if(category == "negative"){
+			FNeg++;
+			pos++;
+			var prob = res.score;
+			texts.push({"text":text,		
+						"category":category,
+						"probability":prob
+			});
+		}
+		
+
+
+	}
+
+	for	(index = 0; index < test_neg.length; index++) {
+    	text = test_neg[index];
+		var res = AFC.analyze(text); // Testing Classifier
+		
+		var category = "";
+		if(res.score < 0) category = "negative";
+		if(res.score > 0) category = "positive";
+		if(res.score == 0) category = "neutral";
+		console.log(text + " "+category);
+
+		if(category == "positive"){
+			FPos++;
+			neg++;
+			var prob = res.score;
+			texts.push({"text":text,		
+						"category":category,
+						"probability":prob
+			});
+		}
+		if(category == "negative"){
+			TNeg++;
+			neg++;
+			var prob = res.score;
+			texts.push({"text":text,		
+						"category":category,
+						"probability":prob
+			});
+		}
+	}
+
+	console.log("Testing Done !!");
+
+	var Accuracy = ((TPos + TNeg)/(pos+neg)) * 100;
+	var Recall = (TPos / (FNeg + TPos)) * 100;
+	var Precision = (TPos / (FPos + TPos)) * 100; 
+	var recall = "Recall : "+Recall.toFixed(2);
+	var precision = "Precision : "+Precision.toFixed(2);
+	var accuracy = "Accuracy : "+ Accuracy.toFixed(2);
+	var  out = "AFINN Classifier Performance : " + accuracy + " | " + recall + " | " + precision;  
+	//console.log("Accuracy %d",Accuracy);
+	texts.unshift({"text":out,		
+				"category":"",
+				"probability":""
+	})
+	callback(texts);
+}
+
 
 app.get("/github/:user", function(request, response){
 	username = request.params.user;
@@ -130,6 +304,28 @@ app.get("/github/:user", function(request, response){
 		response.json(repos);
 	});
 });
+
+
+app.get("/sentiment/:classifier", function(request, response){
+	classifier = request.params.classifier;
+	if(classifier == "NB"){
+		    console.log("Naive Bayes");
+			NB_Classify(function(texts){
+			console.log(texts);
+			response.json(texts);
+		});
+	}
+	else if(classifier == "AFINN"){
+		  console.log("AFINN");
+			AFINN_Classify(function(texts){
+			console.log(texts);
+			response.json(texts);
+		});
+
+	}
+});
+
+
 
 app.get("/hello", function(request, response){
 	response.send("Hello!");
@@ -147,6 +343,8 @@ app.post("/fetch", function(request, response){
 app.get("/", routes.index);
 app.get("/browser", routes.browse);
 app.get("/github", routes.git);
+app.get("/sentiment", routes.sentiment);
+
 
 var server = require('http').Server(app);
 var io = require('socket.io').listen(server);
@@ -156,8 +354,11 @@ server.listen(port, host,function(){
 });
 
 
+
+
 function getTwitStr(word) {
-MongoClient.connect(db_url, function(err, db) {
+  console.log("getTwitStr called");
+  MongoClient.connect(db_url, function(err, db) {
   assert.equal(null, err);
   console.log("we are connected!" + url);
 
@@ -260,6 +461,7 @@ MongoClient.connect(db_url, function(err, db) {
 
 
 app.get("/:key", function(request, response){
+	console.log("key called");
 	keyword = request.params.key;
 	getTwitStr(keyword);
 });

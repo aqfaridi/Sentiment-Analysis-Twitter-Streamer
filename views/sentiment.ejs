@@ -1,0 +1,57 @@
+
+<html ng-app="twitstr">
+<head>
+<%include partials/head.ejs %>
+<style>
+body{
+	background:url("img/back.jpg");
+	}
+</style>
+</head>
+<body >
+<%include partials/header.ejs %>
+
+<div style="padding-bottom: 150px;" class="container text-center" ng-controller="SentimentCtrl">
+         
+	 <br><br>
+	 <h1 class="intro-title animated fadeInDown" style="color:white;font-size:35px;line-height:1.2;"> Sentiment Analysis or Text Classification using Naive Bayes !!</h1>
+
+	
+ 	<div class="row">
+ 		<div class = "col-sm-5">
+
+        	<button type="submit" class="col-sm-5 btn btn-danger" ng-click="getsentNB()">Naive Bayes Classifier</button>
+
+    	</div>
+
+        <div class = "col-sm-5">
+        <button type="submit" class="col-sm-5 btn btn-danger" ng-click="getsentAFINN()">AFINN Classifier</button></div>
+    	
+	</div>
+	<br><br>
+	 <table class="table">
+	 	<thead>
+	 		<tr class="danger">
+	 			<th>S.No.</th>
+	 			<th>Text</th>
+	 			<th>Class</th>
+	 			<th>Probability</th>
+	 		</tr>
+	 	</thead>
+	 	<tbody>
+	 		<tr class="success" ng-repeat="text in texts">
+	 			<td>{{$index+1}}</td>
+	 			<td>{{text.text}}</a></td>
+	 			<td>{{text.category}}</td>
+	 			<td>{{text.probability}}</td>	
+	 		</tr>
+	 	</tbody>
+	 </table>
+
+</div>
+
+<%include partials/footer.ejs %>
+<%include partials/jsdefaults.ejs %>
+</body>
+
+</html>

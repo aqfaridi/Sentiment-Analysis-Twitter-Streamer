@@ -9,3 +9,7 @@ exports.browse = function(request, response){
 exports.git = function(request, response){
 	response.render("github",{title:"Github"}); // rendering browse.ejs template
 }
+
+exports.sentiment = function(request, response){
+	response.render("sentiment",{title:"sentiment Analysis"}); // rendering browse.ejs template
+}
