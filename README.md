@@ -33,7 +33,7 @@ Sentiment Anaylysis of Movie Reviews using Naive Bayesian & AFINN Classifier and
 - Clone this repository using Git Bash: 
 
 ```ruby
-	git clone https://github.com/aqfaridi/Twitter-Streamer.git
+	git clone https://github.com/aqfaridi/Sentiment-Analysis-Twitter-Streamer.git
 ```
 
 - Navigate to cloned directory, Update config.json with your developers twitter tokens.
