@@ -22,6 +22,7 @@ Sentiment Anaylysis of Movie Reviews using Naive Bayesian & AFINN Classifier and
  		*  get signature HMAC-SHA1 encoded using signature base string.
 
  - Implemented Naive Bayesian Classifier in JS : NB.js and stopwords.js
+   + Multinomial NB Model : http://nlp.stanford.edu/IR-book/html/htmledition/naive-bayes-text-classification-1.html
  - Implemented AFINN Classifier in JS : afinnClassifier.js	
 
 ##Configuration 
